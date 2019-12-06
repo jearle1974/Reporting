@@ -6,7 +6,7 @@ Installation
 Add the following line to your Cocoapods pod file
 
   # jearle pods
-  pod 'Reporting', :git => 'https://github.com/jearle1974/Reporting.git', :tag => '1.0.0'
+  pod 'Reporting', :git => 'https://github.com/jearle1974/Reporting.git'
   
 -------------------------------------
 
