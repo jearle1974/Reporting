@@ -69,7 +69,7 @@ public class Reporter {
       case .Warning:
         finalMessage = "⚠️ "
       case .Error:
-        finalMessage = "‼️ "
+        finalMessage = "‼️ Error: "
       case .Success:
         finalMessage = "✅ "
       case .Information:
