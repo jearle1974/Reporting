@@ -27,6 +27,13 @@ public enum Type {
   case Default
 }
 
+private enum msgType {
+  case info
+  case debug
+  case error
+  case fault
+}
+
 public enum Toggle {
   case On
   case Off
@@ -62,30 +69,55 @@ public class Reporter {
   
   public func DebugLog(log: String!, type: Type = .Default, file: String = #file, function: String = #function, line: Int = #line) {
     #if DEBUG
+    var finalMessageType: msgType?
+    var logType: OSLog?
     var finalMessage: String
     
     switch type {
       case .Data:
+        logType = OSLog.Data
+        finalMessageType = .info
         finalMessage = "🗄️ "
       case .Warning:
+        logType = OSLog.Data
+        finalMessageType = .fault
         finalMessage = "⚠️ "
       case .Error:
+        logType = OSLog.Data
+        finalMessageType = .error
         finalMessage = "‼️ Error: "
       case .Success:
+        logType = OSLog.Data
+        finalMessageType = .debug
         finalMessage = "✅ "
       case .Information:
+        logType = OSLog.Data
+        finalMessageType = .info
         finalMessage = "💬 "
       case .Internet:
+        logType = OSLog.Data
+        finalMessageType = .info
         finalMessage = "🌏 "
       case .Connection:
+        logType = OSLog.Data
+        finalMessageType = .info
         finalMessage = "📶 "
       case .EMail:
+        logType = OSLog.Data
+        finalMessageType = .debug
         finalMessage = "✉️ "
       case .Tracking:
+        logType = OSLog.Data
+        finalMessageType = .info
         finalMessage = "📍"
       case .Password:
+        logType = OSLog.Data
+        finalMessageType = .debug
         finalMessage = "🔑"
       case .Secure(let toggle):
+        logType = OSLog.Data
+        finalMessageType = .debug
+        
         switch toggle {
           case .On:
             finalMessage = "🔐 "
@@ -93,6 +125,9 @@ public class Reporter {
             finalMessage = "🔓 "
       }
       case .Sound(let toggle):
+        logType = OSLog.Data
+        finalMessageType = .debug
+        
         switch toggle {
           case .On:
             finalMessage = "🔔 "
@@ -106,33 +141,17 @@ public class Reporter {
     let fmtMsg = self.format(message: log, file: file, function: function, line: line)
     finalMessage += fmtMsg
     
-    switch type {
-      case .Data:
-        os_log(.debug, log: OSLog.Data, "%@", [finalMessage])
-      case .Warning:
-        os_log(.fault, log: OSLog.Warning, "%@", [finalMessage])
-      case .Error:
-        os_log(.error, log: OSLog.Error, "%@", [finalMessage])
-      case .Success:
-        os_log(.debug, log: OSLog.Success, "%@", [finalMessage])
-      case .Information:
-        os_log(.info, log: OSLog.Information, "%@", [finalMessage])
-      case .Internet:
-        os_log(.debug, log: OSLog.Internet, "%@", [finalMessage])
-      case .Connection:
-        os_log(.debug, log: OSLog.Connection, "%@", [finalMessage])
-      case .EMail:
-        os_log(.debug, log: OSLog.EMail, "%@", [finalMessage])
-      case .Tracking:
-        os_log(.info, log: OSLog.Tracking, "%@", [finalMessage])
-      case .Password:
-        os_log(.debug, log: OSLog.Password, "%@", [finalMessage])
-      case .Secure(_):
-        os_log(.debug, log: OSLog.Secure, "%@", [finalMessage])
-      case .Sound(_):
-        os_log(.debug, log: OSLog.Sound, "%@", [finalMessage])
-      case .Default:
-        os_log(.default, log: OSLog.Default, "%@", [finalMessage])
+    switch finalMessageType {
+      case .info:
+        os_log(.debug, log: logType ?? OSLog.default, "%@", [finalMessage])
+      case .debug:
+        os_log(.fault, log: logType ?? OSLog.default, "%@", [finalMessage])
+      case .error:
+        os_log(.error, log: logType ?? OSLog.default, "%@", [finalMessage])
+      case .fault:
+        os_log(.debug, log: logType ?? OSLog.default, "%@", [finalMessage])
+      case .none:
+        os_log(.default, log: logType ?? OSLog.default, "%@", [finalMessage])
     }
     
     #else
@@ -168,7 +187,7 @@ extension OSLog {
   static let Password = OSLog(subsystem: subsystem, category: "password")
   static let Secure = OSLog(subsystem: subsystem, category: "secure")
   static let Sound = OSLog(subsystem: subsystem, category: "sound")
-  static let Default = OSLog(subsystem: subsystem, category: "default")
   
 }
+
 
