@@ -12,6 +12,7 @@ import UIKit
 import os.log
 
 public enum Type {
+  case Debug
   case Error
   case Warning
   case Success
@@ -74,6 +75,10 @@ public class Reporter {
     var finalMessage: String
     
     switch type {
+      case .Debug:
+        logType = OSLog.Debug
+        finalMessageType = .debug
+        finalMessage = "💬 "
       case .Data:
         logType = OSLog.Data
         finalMessageType = .info
@@ -143,13 +148,13 @@ public class Reporter {
     
     switch finalMessageType {
       case .info:
-        os_log(.debug, log: logType ?? OSLog.default, "%@", [finalMessage])
+        os_log(.info, log: logType ?? OSLog.default, "%@", [finalMessage])
       case .debug:
-        os_log(.fault, log: logType ?? OSLog.default, "%@", [finalMessage])
+        os_log(.debug, log: logType ?? OSLog.default, "%@", [finalMessage])
       case .error:
         os_log(.error, log: logType ?? OSLog.default, "%@", [finalMessage])
       case .fault:
-        os_log(.debug, log: logType ?? OSLog.default, "%@", [finalMessage])
+        os_log(.fault, log: logType ?? OSLog.default, "%@", [finalMessage])
       case .none:
         os_log(.default, log: logType ?? OSLog.default, "%@", [finalMessage])
     }
@@ -175,6 +180,7 @@ extension OSLog {
   
   private static var subsystem = Bundle.main.bundleIdentifier!
   
+  static let Debug = OSLog(subsystem: subsystem, category: "debug")
   static let Error = OSLog(subsystem: subsystem, category: "error")
   static let Warning = OSLog(subsystem: subsystem, category: "warning")
   static let Success = OSLog(subsystem: subsystem, category: "success")
@@ -189,5 +195,6 @@ extension OSLog {
   static let Sound = OSLog(subsystem: subsystem, category: "sound")
   
 }
+
 
 
